@@ -65,5 +65,12 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Zip Lambda Functions
+        run: |
+         cd service1
+         zip -r ../terraform/appointment-service.zip .
+         cd ../service2
+         zip -r ../terraform/patient-service.zip .
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
