@@ -67,7 +67,7 @@ jobs:
 
       - name: Zip Lambda Functions
         run: |
-         cd appointment-service
+         cd ../appointment-service
          zip -r ../terraform/appointment-service.zip .
          cd ../patient-service
          zip -r ../terraform/patient-service.zip .
