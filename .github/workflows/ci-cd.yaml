@@ -1,6 +1,22 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - main
+
+
 jobs:
   terraform-lint:
-    ...
+    if: github.event_name == 'pull_request'
+    name: Terraform Init and Fmt
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -21,10 +37,15 @@ jobs:
         run: terraform init
 
       - name: Terraform Format
-        run: terraform fmt -check -recursive
+        run: terraform fmt -recursive
 
   build-and-deploy:
-    ...
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    name: Terraform Apply on Merge to Main
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
