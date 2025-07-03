@@ -1,24 +1,16 @@
-name: CI/CD Pipeline
-
-on:
-  pull_request:
-    branches:
-      - '**'
-  push:
-    branches:
-      - main
-
 jobs:
   terraform-lint:
-    if: github.event_name == 'pull_request'
-    name: Terraform Init and Fmt
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform
+    ...
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -32,15 +24,17 @@ jobs:
         run: terraform fmt -check -recursive
 
   build-and-deploy:
-    if: github.ref == 'refs/heads/main'
-    name: Terraform Apply on Merge to Main
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform
+    ...
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
